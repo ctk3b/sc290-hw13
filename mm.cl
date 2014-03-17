@@ -7,12 +7,12 @@ __kernel void mm(const unsigned int N,
 {
     unsigned int row = get_global_id(0);
     unsigned int col = get_global_id(1);
-    printf("%d %d\n", row, col);
+    //printf("%d %d\n", row, col);
     unsigned int k;
     
     float sum = 0;
     for(k = 0; k < K; k++){
-        sum += A[K * row + k] * B[K * col + k]; 
+        sum += A[K*row + k] * B[M*k + col]; 
     }
-    C[K * row + col] = sum;
+    C[M*row + col] = sum;
 }
