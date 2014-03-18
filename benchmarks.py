@@ -35,15 +35,17 @@ fig = plt.figure()
 plt.xticks(rotation=70)
 ax = fig.add_subplot(111)
 
-gpu = ax.bar(range(len(gpu_times)), gpu_times.values(), align='center',
+n_gpu = len(gpu_times)
+n_cpu = len(cpu_times)
+gpu = ax.bar(range(n_gpu), gpu_times.values(), align='center',
         label='PyOpenCL on Intel HD 4000', color='green')
-cpu = ax.bar(np.arange(len(gpu_times), len(cpu_times) + len(gpu_times)), cpu_times.values(), align='center',
+cpu = ax.bar(range(n_gpu, n_gpu + n_cpu), cpu_times.values(), align='center',
         label='PyOpenCL on Intel i5-3427U @ 1.80GHz', color='blue')
-serial = ax.bar(len(cpu_times) + len(gpu_times), serial_time, align='center',
+serial = ax.bar(n_gpu + n_cpu, serial_time, align='center',
         label='Serial NumPy on Intel i5-3427U @ 1.80GHz', color='red')
 
-ax.set_xlim([0, len(gpu_times) + len(cpu_times)])
-ax.set_xticks(np.arange(-1, len(gpu_times) + len(cpu_times) + 2, 1))
+ax.set_xlim([0, n_cpu + n_gpu])
+ax.set_xticks(np.arange(-1, n_cpu + n_gpu + 2, 1))
 ax.set_xticklabels(gpu_labels + cpu_labels + ['N/A'])
 
 ax.set_xlabel('Local block size')
@@ -51,3 +53,4 @@ ax.set_ylabel('Time per 512x512 multiplication (s)')
 
 ax.legend()
 fig.savefig('benchmark.png', bbox_inches='tight', dpi=600)
+fig.savefig('benchmark.pdf', bbox_inches='tight')

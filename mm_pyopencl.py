@@ -1,15 +1,16 @@
+"""Parallel matrix multiplication using PyOpenCL """
 from argparse import ArgumentParser
 from time import time
-import pdb
 
 import numpy as np
 import pyopencl as cl
 
 
-def save_matrix(M, file_name='generated_output.txt'):
-    dimensions = [str(dim) for dim in M.shape]
-    header = "\t".join(dimensions)
-    np.savetxt(file_name, M, fmt='%.6f', delimiter='\t',
+def save_matrix(matrix, file_name='generated_output.txt'):
+    """Write matrix to text file."""
+    shape = [str(dim) for dim in matrix.shape]
+    header = "\t".join(shape)
+    np.savetxt(file_name, matrix, fmt='%.6f', delimiter='\t',
             header=header, comments='')
 
 # ----- read input data -----
@@ -105,3 +106,4 @@ if args.check is True:
     print "Outputs equal to within rel={0} and abs={1}: {2}".format(
             rtol, atol, np.allclose(serial_C, m_C, rtol, atol))
 
+save_matrix(m_C)
