@@ -26,11 +26,17 @@ parser.add_argument('-r', '--rtol', default=1e-03,
         help=('Relative tolerance for validation check.'))
 parser.add_argument('-a', '--atol', default=1e-05,
         help=('Absolute tolerance for validation check.'))
+parser.add_argument('-b', '--blocks', default=None,
+        help=('Local block size.'))
 
 
 args = parser.parse_args()
 rtol = float(args.rtol)
 atol = float(args.atol)
+if args.blocks is None:
+    blocks = None
+else:
+    blocks = tuple([int(x) for x in args.blocks.split(',')])
 
 with open(args.infile, 'r') as f:
     for i, line in enumerate(f):
@@ -66,8 +72,7 @@ with open('mm.cl', 'r') as f:
 program = cl.Program(ctx, source).build()
 
 global_size = m_C.shape
-#local_size = (16, 4)
-local_size = None
+local_size = blocks
 
 # ----- pushing -----
 m_A_buf = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=m_A)
@@ -84,12 +89,10 @@ for i in range(cycles):
     bench.wait()
 
 gpu_time = (time() - gpu_start) / cycles
+print "Time per multiplication (s): ", gpu_time
 
 # ----- copy back to host -----
 cl.enqueue_read_buffer(queue, result_buf, m_C).wait()
-
-# ---- performance data -----
-print "Time per multiplication (s): ", gpu_time
 
 # ---- validation -----
 if args.check is True:
